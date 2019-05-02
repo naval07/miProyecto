@@ -19,13 +19,16 @@ barramenu.add_cascade(label = "Ayuda", menu = ayuda)
 ##------------------------------- Imagenes ------------------
 textofoto = tk.PhotoImage(file = "textlogo.png")
 textologo = tk.Label(raiz, image = textofoto)
-fondo = tk.PhotoImage(file = "fondomenu01.gif")
+bgEmpezar = tk.PhotoImage(file = "Empezar.png")
+bgPlantilla = tk.PhotoImage(file = "Plantilla.png")
+bgAlineacion = tk.PhotoImage(file = "Alineacion.png")
+fondo = tk.PhotoImage(file = "fondomenu01.png")
 fondomenu = tk.Label(raiz, image = fondo)
 fondomenu.pack()
 ##------------------------------- Botones -------------------
-tk.Button(raiz, bd = 1, height = 2, width = 10, activebackground = "lightblue", bg = "green", text = "Plantilla").place(x = 550, y = 110)
-tk.Button(raiz, bd = 1, height = 2, width = 10, activebackground = "lightblue", bg = "green", text = "Alineacion").place(x = 350, y = 110)
-tk.Button(raiz, bd = 1, height = 2, width = 10, activebackground = "lightblue", bg = "green", text = "Empezar").place(x = 150, y = 110)
+tk.Button(raiz, image = bgPlantilla, text = "Plantilla").place(x = 480, y = 107)
+tk.Button(raiz, image = bgAlineacion, text = "Alineacion").place(x = 312, y = 107)
+tk.Button(raiz, text = "Empezar", image = bgEmpezar).place(x = 145, y = 107)
 textologo.place(x=100, y=200)
 
 
