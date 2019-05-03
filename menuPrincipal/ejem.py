@@ -53,7 +53,6 @@ df= pd.DataFrame(Datos)
 Base_Datos = pd.("BaseDato)              
 
 
-
 #print(l1)
 #print(l2)
 #print (l3)
