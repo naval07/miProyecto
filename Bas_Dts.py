@@ -43,13 +43,31 @@ class Registro:
 		self.tree.heading( "#3" , text = "Pases Buenos" , anchor = CENTER)
 		self.tree.heading( "#4" , text = "Total de pases" , anchor = CENTER)
 		self.tree.heading( "#5" , text = "Efectividad" , anchor = CENTER)
+		
+		self.get_Registro()
 	
 
-	#def Conexion 
+	def Conexion(self , query , parameters = ()):
+		with sqlite3.connect(self.db_nm) as conn:
+			cursor = conn.cursor()
+			result = cursor.execute(query , parameters)
+			conn.commit()
+		return result
+	
+	def get_Registro(self):
+		#Limpia la tabla 
+		records = self.tree.get_children()
+		for i in records:
+			self.tree.delete(element)
+		#insertar datos
+		query = "SELECT * FROM Registro ORDER BY dorsal DESC"
+		db_rows = self.Conexion(query)
+		for row  in db_rows: 
+			self.tree.insert("",0,texto = row[0],value = row[1],texto = row[2])
+		
+	 
 	
 		
-
-
 
 if __name__ == "__main__":
 	window = Tk ()
