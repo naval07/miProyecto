@@ -1,0 +1,180 @@
+import sqlite3
+from tkinter import ttk
+import tkinter as tk
+
+# Bases de Datos (pantillas)
+dataBases = []
+# Clase Tabla
+class Tabla(ttk.Frame):
+    global dataBases
+
+    def __init__(self, frame, database = 0):
+        self.frame = frame
+        self.database = database
+        self.tree = ttk.Treeview(self.frame, height = 20 , columns = 4)
+        self.tree["columns"] = ("#1","#2","#3","#4","#5","#6")
+        #self.tree.grid(row = 5 , column = 0 , columnspan = 5, sticky =  "nw" , pady = 5)
+        self.tree.pack()
+        self.tree.column("#0",width = 50 , minwidth = 50, stretch = True)
+        #print(self.tree)
+        "self.tree.heading( "#0" , text = "Dorsal",anchor = "center")
+        self.tree.heading( "#0" , text = "Dorsal",anchor = "center")
+        self.tree.heading( "#1" , text = "Nombre" , anchor = "center")
+        self.tree.heading( "#2" , text = "Apellido" ,anchor = "center")
+        self.tree.heading( "#3" , text = "Posicion", anchor = "center")
+        self.tree.heading( "#4" , text = "Pases buenos " , anchor = "center")
+        self.tree.heading( "#5" , text = "Pases Totales" , anchor = "center")
+        self.tree.heading( "#6" , text = "Efectividad" , anchor = "center")
+
+# Clase Registro
+class WinDatos(ttk.Frame):
+    global dataBases
+    # Inicia el registro con la ultima plantilla igresada por defecto
+    def __init__(self, tabla = False, base = 0):
+        self.tabla = tabla
+        self.base = base
+        self.window = tk.Tk()
+        super().__init__(self.window)
+        self.window.title("Crear Plantilla")
+        # Variables
+        self.n = tk.StringVar() # campo llenado en Nombre
+        self.d = tk.StringVar() # campo llenado en dorsal
+        self.p = tk.IntVar() # opcion escogida del radiobutton
+        # Crea Frame y LabelFrame
+        frameP = tk.Frame(self.window)
+        frameP.pack()
+        frame = tk.LabelFrame(frameP, text = "Datos del jugador")
+        frame.pack()
+        # Input Nombre
+        tk.Label(frame, text = "Nombre: ").grid(row = 0, column = 0)
+        self.name = tk.Entry(frame, textvariable = self.n)
+        self.name.grid(row = 0, column = 1, sticky = "nw")
+        # Input Dorsal
+        tk.Label(frame, text = "Dorsal: ").grid(row = 1, column = 0)
+        self.dorsal = tk.Entry(frame, textvariable = self.d)
+        self.dorsal.grid(row = 1, column = 1, sticky = "nw")
+        # Input Posicion
+        tk.Label(frame, text = "Posicion: ").grid(row = 2, column = 0)
+        arq = tk.Radiobutton(frame, text = "Arquero", variable = self.p, value = 1).grid(row = 2, column = 1, sticky= "nw", pady = 5)
+        defen = tk.Radiobutton(frame, text = "Defensa", variable = self.p, value = 2).grid(row = 3, column = 1, sticky= "nw", pady = 5)
+        medio = tk.Radiobutton(frame, text = "Mediocampista", variable = self.p, value = 3).grid(row = 4, column = 1, sticky= "nw", pady = 5)
+        dela = tk.Radiobutton(frame, text = "Delantero", variable = self.p, value = 4).grid(row = 5, column = 1, sticky= "nw", pady = 5)
+        # Boton Guardar
+        tk.Button(frame, text = "Agregar", command = self.agregar).grid(row = 6, column = 1, sticky = "nsew")
+
+        if self.tabla == True:
+            tabla = Tabla(frameP)
+
+        self.window.mainloop()
+
+    def agregar(self):
+	    print("Nombre:  " + "\t" + self.name.get())
+	    #print("Apodo:  " + "\t" + a.get())
+	    print("Dorsal:  " + "\t" + self.dorsal.get())
+	    if self.p.get() == 1:
+	        print("Posicion:" + "\t" + "Arquero")
+	    elif self.p.get() == 2:
+	        print("Posicion:" + "\t" + "Defensa")
+	    elif self.p.get() == 3:
+	        print("Posicion:" + "\t" + "Mediocampista")
+	    else:
+	        print("Posicion:" + "\t" + "Delantero")
+# -------------------- funciones -----------------
+#Cerrar la ventana con q
+def close(e):
+    #print(e.char)
+    #if e.char == "q":
+    raiz.destroy()
+
+#Ventana para crear la plantilla
+def crearPlantilla():
+
+    def crearData(data, window):
+        global dataBases
+        dataBases.append(data.get() + ".db")
+        print(dataBases)
+        window.destroy()
+        winDat = WinDatos(True)
+
+
+    win = tk.Tk()
+    win.title("Crear plantilla")
+    #win.geometry("300x50")
+    frame = tk.Frame(win)
+    frame.grid(row = 0, column = 0)
+    tk.Label(frame, text = "Ingrese el nombre").grid(row = 0, column = 0)
+    tk.Label(frame, text = "de su plantilla: ").grid(row = 1, column = 0)
+    d = tk.IntVar()
+    data = tk.Entry(frame, textvariable = d)
+    data.grid(row = 1, column = 1)
+    imprimir = tk.Button(frame, text = "Crear", command = lambda: crearData(data, win)).grid(row = 2, column = 0)
+    win.mainloop()
+
+# Ventana crear jugador
+def agregarJugador(): # incluir la base dedatos a modificar
+    win = WinDatos()
+
+# Ventana editar jugador
+#def editarJugador():
+
+
+
+## ----------------------------- Raiz ---------------------
+raiz = tk.Tk()
+
+raiz.title("Dayel: Para entrenadores")
+raiz.geometry("750x450")
+#raiz.resizable(width="False", height="False")
+## ----------------------------- Menu ----------------------
+barramenu = tk.Menu(raiz)
+raiz.config(menu = barramenu)
+# ---- pestanas menu ---------------
+archivo = tk.Menu(barramenu, tearoff = 0)
+plantilla = tk.Menu(barramenu, tearoff = 0)
+opciones = tk.Menu(barramenu, tearoff = 0)
+ayuda = tk.Menu(barramenu, tearoff = 0)
+#---- cascada -----
+#barramenu.add_cascade(label = "Archivo", menu = archivo)
+barramenu.add_cascade(label = "Plantilla", menu = plantilla)
+barramenu.add_cascade(label = "Opciones", menu = opciones)
+barramenu.add_cascade(label = "Ayuda", menu = ayuda)
+#-- contenidos -
+#- Archivo -
+#- Plantilla -
+plantilla.add_command(label = "Crear plantilla", command = crearPlantilla)
+plantilla.add_command(label = "Nuevo jugador", command = agregarJugador)
+plantilla.add_command(label = "Editar jugador/es")
+#- Opciones -
+opciones.add_command(label = "Agregar tipo de alineamiento")
+opciones.add_command(label = "Borrar tipo de alineamiento")
+#- Ayuda -
+ayuda.add_command(label = "Datos de la aplicacion")
+ayuda.add_command(label = "Datos de creadores")
+##------------------------------- Imagenes ------------------
+#textofoto = tk.PhotoImage(file = "textlogo.png")
+#textologo = tk.Label(raiz, image = textofoto)
+bgEmpezar = tk.PhotoImage(file = "empezar.png")
+fondo = tk.PhotoImage(file = "fondomenu001.png")
+fondomenu = tk.Label(raiz, image = fondo)
+fondomenu.pack()
+##------------------------------- Botones -------------------)
+tk.Button(raiz, text = "Empezar", image = bgEmpezar).place(x = 265, y = 111)
+#textologo.place(x=100, y=200)
+
+raiz.bind('control-q>', close)
+raiz.focus_set()
+
+tk.mainloop()
+
+
+#------------------------------ Fondo ---------------------
+#fondoframe = tk.Frame()
+##fondoframe.pack(fill = "both", expand="True")
+#fondoframe.config(bg = "blue")
+
+#texto = tk.PhotoImage(file = "textlogo.png")
+##tk.Label(fondoframe, image = texto).pack()
+#fond = tk.Label(raiz, image = fondo)
+#fond.grid(row = 0, column = 0)
+#text = tk.Label(raiz, image = texto)
+#text.grid(row = 0, column = 0)
