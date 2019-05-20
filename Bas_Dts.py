@@ -1,3 +1,4 @@
+
 from tkinter import ttk
 from tkinter import Tk
 from tkinter import *
@@ -10,7 +11,8 @@ import sqlite3
 class Registro:
 
 	db_nm = "DatosCreate.db"
-	schema_filename  = "CreaTI.sql"
+	schema_filename  = "Crear_schema.sql"
+
 
 
 	def __init__ (self, window):
@@ -39,7 +41,7 @@ class Registro:
 		self.PasesBuenos = 0
 		self.PasesTotales=0
 		self.Efectividad = 0
-
+		self.x = 0
 
 
 	#Boton para guardar datos
@@ -72,7 +74,7 @@ class Registro:
 		#Botones de Elimincion y Edicion
 		ttk.Button(text = "Eliminar" , command = self.delete_Jugador).grid(row = 6 , column = 0 , sticky = W + E)
 		ttk.Button(text = "Editar" , command = self.edit_registro).grid(row = 6 , column = 1 , sticky = W + E)
-
+		ttk.Button(text = "Pases Totales" , command = self.PasesTot).grid(row = 6 , column = 2 , sticky = W + E)
 
 		#Para agregar los datos
 		self.get_Registro()
@@ -118,7 +120,7 @@ class Registro:
 	def add_Registro(self) :
 		if self.Validation():
 			query = "INSERT INTO task VALUES (NULL , ? ,?,?,?,?,?)"
-			parameters = (self.Dor.get(),self.name.get(),self.pos.get(),self.PasesBuenos,self.PasesTotales,self.Efectividad)
+			parameters = (self.Dor.get(),self.name.get(),self.pos.get(),self.PasesBuenos,self.PasesTo.get(),self.Efectividad)
 			self.run_query(query , parameters)
 			self.message["text"]="El jugador {} a sido añadido exitosamente".format(self.name.get())
 			self.name.delete(0 ,"end")
@@ -147,7 +149,7 @@ class Registro:
 	def edit_registro(self):
 		self.message["text"]=""
 		try:
-			self.tree.item(self.tree.selection())["text"][5]
+			self.tree.item(self.tree.selection())["text"][0]
 		except IndexError as e:
 			self.message["text"]="Elija el jugador que desea Editar"
 			return
@@ -190,32 +192,65 @@ class Registro:
 
 	def edit_record (self , New_name , Nombre , New_Dorsal , old_Dorsal ,New_Posicion , old_Posicion):
 		query = "UPDATE task set Nombres = ? , Dorsal = ? , Posicion = ? WHERE Nombres = ? AND Dorsal = ? AND Posicion = ?"
-		paramenters = (New_name ,  New_Dorsal ,New_PosicionNombre , old_Dorsal , old_Posicion)
+		paramenters = ( New_name ,  New_Dorsal ,New_Posicion , Nombre , old_Dorsal , old_Posicion )
 		self.run_query(query , paramenters)
 
 		self.edit_wid.destroy()
 		self.message["text"] = "Se actualizo el jugador {} correctamente".format(New_name)
 		self.get_Registro()
 
-	#def PasesTot (self):
+	def PasesTot (self):
+		self.message["text"]=""
+		try:
+			self.tree.item(self.tree.selection())["text"][0]
+		except IndexError as e:
+			self.message["text"]="Elija el jugador que dea añadirle sus pases"
+			return
+		Nombre = self.tree.item(self.tree.selection())["text"]
+		old_PasesTot = self.tree.item(self.tree.selection())["values"][2]
+		old_PasesBuenos= self.tree.item(self.tree.selection())["values"][3]
+		old_Efectividad= self.tree.item(self.tree.selection())["values"][4]
+		#Crear una ventana dentro de esta ventana para poder de alli editar los datos
+		self.Pases_wid = Toplevel() #Se usa para crear una ventana dentro de otra ventana
+		self.Pases_widtitle = "Añadir Puntos de el jugador"
+		#Pases Totales Antiguo
+		Label(self.Pases_wid , text = "Pasos Totales Actual: " ).grid(row = 0 , column =1)
+		Entry(self.Pases_wid , textvariable = StringVar(self.Pases_wid, value = old_PasesTot), state = "readonly").grid(row = 0 , column = 2)
 
+		#Pases Totales New
+		Label(self.Pases_wid, text = "Nuevos Pases ").grid(row = 1 , column = 1)
+		New_PasT = Entry(self.Pases_wid)
+		New_PasT.grid(row = 1 , column = 2 )
 
+		#Antiguo numero de Dorsal
+		Label(self.Pases_wid , text = "Pases Buenos Actual:").grid(row = 2 , column = 1)
+		Entry(self.Pases_wid, textvariable = StringVar (self.Pases_wid, value = old_PasesBuenos), state = "readonly").grid(row = 2 , column = 2)
 
+		#Nuevo Numero de los pases Buenos
+		Label(self.Pases_wid , text = "Nueva Pases Buenos:").grid(row = 3 , column = 1)
+		New_PassB = Entry(self.Pases_wid)
+		New_PassB.grid(row = 3 , column = 2)
 
-	def PasosBuenos(self,n):
-		self.nP = n
-		i = 0
-		for x in n:
-			i += 1
-		return i
-		a = (self.PasesTot - i)
+		#Antigua posicion
+		Label(self.Pases_wid , text = "Efectividad Actual:").grid(row = 4 , column = 1)
+		Entry(self.Pases_wid, textvariable = StringVar(self.Pases_wid , value = old_Efectividad), state = "readonly").grid(row = 4 , column = 2)
 
-	def Efectividad (self):
-		e = ((self.PasosBuenos)*100)//self.PasesTot
-		print ("Tuvo una efectividad del {0} %".format(e))
+		#Nueva Posicionrror
+		Label(self.Pases_wid , text = "Nueva Efectivadad:").grid(row = 5 , column = 1)
+		New_Efectividad = Entry(self.Pases_wid)
+		New_Efectividad.grid(row = 5 , column = 2)
 
+		#Boton para guardar o actualizar  los cambios
 
+		Button(self.Pases_wid , text = "Actualizar" , command = lambda: self.Pass_Record(New_PasT.get(),old_PasesTot , New_PassB.get(), old_PasesBuenos , New_Efectividad.get(), old_Efectividad)).grid(row=6 , column = 2 , sticky = W + E)
 
+	def Pass_Record (self , New_PasT , old_PasesTot , New_PassB , old_PasesBuenos ,New_Efectividad , old_Efectividad):
+		query = "UPDATE task set PasesTotales = ? , PasesBuenos = ? , Efectividad = ? WHERE PasesTotales = ? AND PasesBuenos = ? AND Efectividad = ?"
+		paramenters = ( New_PasT ,  New_PassB ,New_Efectividad , old_PasesTot , old_PasesBuenos, old_Efectividad )
+		self.run_query(query , paramenters)
+		self.Pases_wid.destroy()
+		self.message["text"] = "Se actualizaron los pases del jugador  {} correctamente".format(self.name)
+		self.get_Registro()
 
 
 
