@@ -190,9 +190,8 @@ class Registro:
 
 	def edit_record (self , New_name , Nombre , New_Dorsal , old_Dorsal ,New_Posicion , old_Posicion):
 		query = "UPDATE task set Nombres = ? , Dorsal = ? , Posicion = ? WHERE Nombres = ? AND Dorsal = ? AND Posicion = ?"
-		paramenters = (Nombre , old_Dorsal , old_Posicion , New_name ,  New_Dorsal ,New_Posicion)
+		paramenters = (New_name ,  New_Dorsal ,New_PosicionNombre , old_Dorsal , old_Posicion)
 		self.run_query(query , paramenters)
-		print(self.run_query)
 
 		self.edit_wid.destroy()
 		self.message["text"] = "Se actualizo el jugador {} correctamente".format(New_name)
